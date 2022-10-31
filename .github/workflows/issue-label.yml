@@ -1,0 +1,24 @@
+name: Issue Labeled
+
+# 新增标签时触发
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  issue-labeled:
+    # 打标签和提交 issue 的不是同一个人才执行
+    if: github.actor != github.event.issue.user.login
+    runs-on: ubuntu-latest
+    steps:
+      - name: Need more info
+        if: github.event.label.name == '👀 need more info'
+        uses: actions-cool/issues-helper@main
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            你好 @${{ github.event.issue.user.login }}，你所提供的信息不足于我们排查问题, 请按照 issue 模板填写相关信息 (参考 #852 #848), 提供 gif, 截图, 代码片段, 配置信息, 版本号, 可复现链接等方式, 详细说明复现步骤, 感谢配合, 谢谢! 15 天内未回复issue自动关闭。
+
+            Hello, @${{ github.event.issue.user.login }}, the information you provided is not enough for us to troubleshoot the problem. Please complete the issue description (refer #852 #848), provide gifs, screenshots, config, version. And explain the reproduction steps in detail. Thanks so much for your cooperation! The issue will be closed without any replay within 15 days.
